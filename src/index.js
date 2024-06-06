@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
 import express from 'express';
 
-import models from './models';
+import models, { sequalize } from './models';
 import routes from './routes';
 
 const app = express();
@@ -67,6 +67,10 @@ app.delete('/messages/:messageId', (req, res) => {
   return res.send(message);
 });
 
-app.listen(process.env.PORT, () =>
-  console.log(`Example app listening on port ${process.env.PORT}!`)
-);
+const eraseDatabaseOnSync = true;
+
+sequalize.sync({ force: eraseDatabaseOnSync }).then(async () => {
+  app.listen(process.env.PORT, () => {
+    console.log(`Example app listening on port ${process.env.PORT}!`)
+  });
+});
