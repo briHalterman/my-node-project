@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
 import express from 'express';
 
-import models from './models'
+import models from './models';
+import routes from './routes';
 
 const app = express();
 
@@ -17,6 +18,10 @@ app.use((req, res, next) => {
   };
   next();
 });
+
+app.use('/session', routes.session);
+app.use('/users', routes.user);
+app.use('/messages', routes.message);
 
 app.use(cors());
 
