@@ -23,49 +23,71 @@ app.use('/session', routes.session);
 app.use('/users', routes.user);
 app.use('/messages', routes.message);
 
+app.get('*', function (req, res, next) {
+  const error = new Error(
+    `${req.ip} tried to access ${req.originalUrl}`
+  );
+
+  error.statusCode = 301;
+
+  next(error);
+});
+
+app.use((error, req, res, next) => {
+  if (!error.statusCode) error.stattusCode = 500;
+
+  if (error.statusCode === 301) {
+    return res.status(301).redirect('/not-found');
+  }
+
+  return res
+    .status(error.statusCode)
+    .json({ error: error.toString() });
+});
+
 app.use(cors());
 
-app.get('/session', (req, res) => {
-  return res.send(req.context.models.users[req.context.me.id]);
-});
+// app.get('/session', (req, res) => {
+//   return res.send(req.context.models.users[req.context.me.id]);
+// });
 
-app.get('/users', (req, res) => {
-  return res.send(Object.values(req.context.models.users));
-});
+// app.get('/users', (req, res) => {
+//   return res.send(Object.values(req.context.models.users));
+// });
 
-app.get('/users/:userId', (req, res) => {
-  return res.send(req.context.models.users[req.params.userId]);
-});
+// app.get('/users/:userId', (req, res) => {
+//   return res.send(req.context.models.users[req.params.userId]);
+// });
 
-app.get('/messages', (req, res) => {
-  return res.send(Object.values(req.context.models.messages));
-});
+// app.get('/messages', (req, res) => {
+//   return res.send(Object.values(req.context.models.messages));
+// });
 
-app.get('/messages/:messageId', (req, res) => {
-  return res.send(req.context.models.messages[req.params.messageId]);
-});
+// app.get('/messages/:messageId', (req, res) => {
+//   return res.send(req.context.models.messages[req.params.messageId]);
+// });
 
-app.post('/messages', (req, res) => {
-  const id = uuidv4();
-  const message = {
-    id,
-    text: req.body.text,
-    userId: req.context.me.id,
-  };
+// app.post('/messages', (req, res) => {
+//   const id = uuidv4();
+//   const message = {
+//     id,
+//     text: req.body.text,
+//     userId: req.context.me.id,
+//   };
 
-  req.context.models.messages[id] = message;
+//   req.context.models.messages[id] = message;
 
-  return res.send(message);
-});
+//   return res.send(message);
+// });
 
-app.delete('/messages/:messageId', (req, res) => {
-  const { [req.params.messageId]: message, ...otherMessages } =
-    req.context.models.messages;
+// app.delete('/messages/:messageId', (req, res) => {
+//   const { [req.params.messageId]: message, ...otherMessages } =
+//     req.context.models.messages;
 
-  req.context.models.messages = otherMessages;
+//   req.context.models.messages = otherMessages;
 
-  return res.send(message);
-});
+//   return res.send(message);
+// });
 
 const eraseDatabaseOnSync = true;
 
