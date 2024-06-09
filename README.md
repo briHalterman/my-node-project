@@ -21,3 +21,6 @@ This project demonstrates the creation of a RESTful API using Express.js and Pos
 
 6. **Part 6: Creating a REST API with Express.js and PostgreSQL**
    - Connect PostgreSQL to Express for our REST API.
+
+7. **Part 7: How to Handle Errors in Express**
+   - Implement error handling in Express.
