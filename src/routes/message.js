@@ -7,14 +7,18 @@ import { BadRequestError } from '../utils/errors';
 const router = Router();
 
 router.get('/', async (req, res) => {
-  const messages = await req.context.models.Message.findAll();
+  const messages = await req.context.models.Message.findAll().catch(
+    (error) => next(new BadRequestError(error))
+  );
+
   return res.send(messages);
 });
 
 router.get('/:messageId', async (req, res) => {
   const message = await req.context.models.Message.findByPk(
-    req.params.messageId
-  );
+    req.params.messageId,
+  ).catch((error) => next(new BadRequestError(error)));
+
   return res.send(message);
 });
 
@@ -30,7 +34,7 @@ router.post('/', async (req, res, next) => {
 router.delete('/:messageId', async (req, res) => {
   const result = await req.context.models.Message.destroy({
     where: { id: req.params.messageId },
-  });
+  }).catch((error) => next(new BadRequestError(error)));
 
   return res.send(true);
 });
